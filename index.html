@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Второй закон Ньютона</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #101827;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+.box {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 500px;
+    margin: auto;
+}
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px;
+}
+button {
+    padding: 12px 25px;
+    background: #38bdf8;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+}
+canvas {
+    background: white;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Второй закон Ньютона</h1>
+<p>Закон: F = m · a</p>
+
+Масса (кг):
+Сила (Н):
+<h3 id="result">Ускорение: 5 м/с²</h3>
+
+Рассчитать
+Запустить движение
+
+</div>
+<script>
+function calculate() {
+    let m = Number(document.getElementById("mass").value);
+    let F = Number(document.getElementById("force").value);
+    if (m <= 0 || !Number.isFinite(m) || !Number.isFinite(F)) {
+        alert("Введите корректные значения!");
+        return;
+    }
+    let a = F / m;
+    document.getElementById("result").innerText =
+        "Ускорение: " + a.toFixed(2) + " м/с²";
+}
+let x = 20;
+let velocity = 0;
+let animation;
+function start() {
+    cancelAnimationFrame(animation);
+    x = 20;
+    velocity = 0;
+    let m = Number(document.getElementById("mass").value);
+    let F = Number(document.getElementById("force").value);
+    if (m <= 0 || !Number.isFinite(m) || !Number.isFinite(F)) {
+        alert("Введите корректные значения!");
+        return;
+    }
+    let a = F / m;
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    function draw() {
+        ctx.clearRect(0, 0, 400, 150);
+        ctx.fillStyle = "#2563eb";
+        ctx.fillRect(x, 75, 40, 40);
+        velocity += a * 0.016;
+        x += velocity * 0.016;
+        if (x > 400) x = -40;
+        animation = requestAnimationFrame(draw);
+    }
+    draw();
+}
+calculate();
+</script>
+</body>
+</html>
