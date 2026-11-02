@@ -2,42 +2,51 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Второй закон Ньютона</title>
 <style>
 body {
-  background: #101827;
-  color: white;
-  font-family: Arial;
-  text-align: center;
-  padding: 15px;
+    font-family: Arial, sans-serif;
+    background: #101827;
+    color: white;
+    text-align: center;
+    padding: 15px;
 }
 .box {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 500px;
-  margin: auto;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 500px;
+    margin: auto;
 }
 input {
-  display: block;
-  width: 90%;
-  padding: 12px;
-  margin: 10px auto;
-  box-sizing: border-box;
+    display: block;
+    width: 90%;
+    padding: 12px;
+    margin: 10px auto;
+    box-sizing: border-box;
+    border-radius: 7px;
+    border: none;
 }
 button {
-  padding: 12px;
-  margin: 5px;
-  background: #38bdf8;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+    padding: 12px 18px;
+    margin: 5px;
+    background: #38bdf8;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
 }
 canvas {
-  width: 100%;
-  background: white;
-  border-radius: 10px;
+    display: block;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+.info {
+    color: #38bdf8;
+    font-size: 17px;
 }
 </style>
 </head>
@@ -45,88 +54,115 @@ canvas {
 <div class="box">
 <h1>Второй закон Ньютона</h1>
 <h2>F = m · a</h2>
+<p>
+Второй закон Ньютона показывает,
+что ускорение тела зависит от силы
+и массы тела.
+</p>
 
-Масса (кг)
-Сила (Н)
+Масса тела (кг):
+Сила (Н):
 <h3 id="result">Ускорение: 5 м/с²</h3>
 
 Рассчитать
 Запустить движение
 Остановить
 
-<p id="info">Готово к эксперименту!</p>
+<p class="info" id="info">
+Готово к эксперименту!
+</p>
 </div>
 <script>
+const massInput = document.getElementById("mass");
+const forceInput = document.getElementById("force");
+const result = document.getElementById("result");
+const info = document.getElementById("info");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let x = 20;
 let velocity = 0;
+let acceleration = 0;
 let animation = null;
 let running = false;
 let lastTime = 0;
 function calculate() {
-  let m = Number(document.getElementById("mass").value);
-  let F = Number(document.getElementById("force").value);
-  if (!Number.isFinite(m) || !Number.isFinite(F) || m <= 0) {
-    alert("Введите массу больше нуля и корректную силу!");
-    return false;
-  }
-  let a = F / m;
-  document.getElementById("result").innerText =
-    "Ускорение: " + a.toFixed(2) + " м/с²";
-  return true;
+    let m = Number(massInput.value);
+    let F = Number(forceInput.value);
+    if (!Number.isFinite(m) || !Number.isFinite(F) || m <= 0) {
+        result.textContent = "Введите корректные значения!";
+        return false;
+    }
+    acceleration = F / m;
+    result.textContent =
+        "Ускорение: " + acceleration.toFixed(2) + " м/с²";
+    return true;
 }
 function draw() {
-  ctx.clearRect(0, 0, 400, 180);
-  ctx.fillStyle = "#64748b";
-  ctx.fillRect(0, 155, 400, 5);
-  ctx.fillStyle = "#2563eb";
-  ctx.fillRect(x, 110, 45, 45);
-  ctx.fillStyle = "black";
-  ctx.font = "15px Arial";
-  ctx.fillText("Тело", x + 5, 100);
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x + 45, 130);
-  ctx.lineTo(x + 85, 130);
-  ctx.lineTo(x + 75, 120);
-  ctx.moveTo(x + 85, 130);
-  ctx.lineTo(x + 75, 140);
-  ctx.stroke();
+    ctx.clearRect(0, 0, 400, 180);
+    // Поверхность
+    ctx.fillStyle = "#64748b";
+    ctx.fillRect(0, 155, 400, 5);
+    // Тело
+    ctx.fillStyle = "#2563eb";
+    ctx.fillRect(x, 110, 45, 45);
+    // Название тела
+    ctx.fillStyle = "black";
+    ctx.font = "15px Arial";
+    ctx.fillText("Тело", x + 5, 100);
+    // Стрелка силы
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + 45, 130);
+    ctx.lineTo(x + 85, 130);
+    ctx.lineTo(x + 75, 120);
+    ctx.moveTo(x + 85, 130);
+    ctx.lineTo(x + 75, 140);
+    ctx.stroke();
 }
 function start() {
-  if (!calculate()) return;
-  cancelAnimationFrame(animation);
-  let m = Number(document.getElementById("mass").value);
-  let F = Number(document.getElementById("force").value);
-  let a = F / m;
-  x = 20;
-  velocity = 0;
-  running = true;
-  lastTime = 0;
-  function move(time) {
-    if (!running) return;
-    if (lastTime === 0) lastTime = time;
-    let dt = Math.min((time - lastTime) / 1000, 0.05);
-    lastTime = time;
-    velocity += a * dt;
-    x += velocity * dt * 5;
-    if (x > 350) {
-      x = 20;
-      velocity = 0;
+    if (!calculate()) return;
+    stop();
+    x = 20;
+    velocity = 0;
+    running = true;
+    lastTime = 0;
+    function move(time) {
+        if (!running) return;
+        if (lastTime === 0) {
+            lastTime = time;
+        }
+        let dt = Math.min((time - lastTime) / 1000, 0.05);
+        lastTime = time;
+        // Второй закон Ньютона
+        velocity += acceleration * dt;
+        x += velocity * dt * 5;
+        // Возвращение тела в начало
+        if (x > 350) {
+            x = 20;
+            velocity = 0;
+        }
+        draw();
+        info.textContent =
+            "Скорость: " + velocity.toFixed(2) + " м/с";
+        animation = requestAnimationFrame(move);
     }
-    draw();
-    document.getElementById("info").innerText =
-      "Скорость: " + velocity.toFixed(2) + " м/с";
     animation = requestAnimationFrame(move);
-  }
-  animation = requestAnimationFrame(move);
 }
 function stop() {
-  running = false;
-  cancelAnimationFrame(animation);
+    running = false;
+    if (animation !== null) {
+        cancelAnimationFrame(animation);
+        animation = null;
+    }
+    info.textContent = "Моделирование остановлено";
 }
+document.getElementById("calculate")
+    .addEventListener("click", calculate);
+document.getElementById("start")
+    .addEventListener("click", start);
+document.getElementById("stop")
+    .addEventListener("click", stop);
 calculate();
 draw();
 </script>
